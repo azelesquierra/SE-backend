@@ -1,0 +1,223 @@
+{
+	"info": {
+		"_postman_id": "dd86719d-261c-4c80-9821-17b429ebf07e",
+		"name": "Software engineering",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43045869",
+		"_collection_link": "https://task45.postman.co/workspace/My-Workspace~aede43d3-902c-42e0-8b41-afe30605a9ac/collection/43045869-dd86719d-261c-4c80-9821-17b429ebf07e?action=share&source=collection_link&creator=43045869"
+	},
+	"item": [
+		{
+			"name": "get patients",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/patients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"patients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update patients",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"name\": \"Azel E.\", \r\n   \"birthDate\": \"2003-11-18\", \r\n   \"email\": \"azelesquierra@updated.com\",\r\n   \"phone\": \"09123456789\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/patients/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"patients",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "68f1d3a259cad447045b5e8e"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create patient",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Azel Esquierra\",\r\n    \"birthdate\": \"November 18, 2003\",\r\n    \"email\": \"azel@gmail.com\",\r\n    \"phone\": \"09123456789\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create doctor",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Dr. John Doe\",\r\n  \"specialty\": \"Cardiology\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/doctors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"doctors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/patients/:id",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "68f1d68759cad447045b5e98"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Dr. Bean\",\r\n  \"specialty\": \"Dentist\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/doctors/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"doctors",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "68f1daf2fc31f45ace8af216"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"patientId\": \"68f1d3a259cad447045b5e8e\",\r\n  \"doctorId\": \"68f1daf2fc31f45ace8af216\",\r\n  \"startAt\": \"2025-10-16T09:00:00Z\",\r\n  \"endAt\": \"2025-10-16T09:30:00Z\",\r\n  \"notes\": \"Routine check-up\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/appointments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"appointments"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
