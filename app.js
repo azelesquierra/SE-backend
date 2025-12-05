@@ -1,23 +1,33 @@
-    const express = require("express");
-    const bodyParser = require("body-parser");
-    const dotenv = require("dotenv");
-    const connectDB = require("./config/db");
+const express = require("express");
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");  // ADD THIS
 
-    const patientRoutes = require("./routes/patientRoutes");
-    const doctorRoutes = require("./routes/doctorRoutes");
-    const appointmentRoutes = require("./routes/appointmentRoutes");
+const patientRoutes = require("./routes/patientRoutes");
+const doctorRoutes = require("./routes/doctorRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
 
-    dotenv.config();
-    connectDB();
+dotenv.config();
 
-    const app = express();
-    app.use(bodyParser.json());
+// Use your environment variables
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ MongoDB Connected Successfully'))
+.catch(err => {
+  console.error('❌ MongoDB Connection Error:', err.message);
+  process.exit(1);
+});
 
-    app.get("/", (req, res) => res.send("🏥 Clinic API is running!"));
+const app = express();
+app.use(bodyParser.json());
 
-    app.use("/api/patients", patientRoutes);
-    app.use("/api/doctors", doctorRoutes);
-    app.use("/api/appointments", appointmentRoutes);
+app.get("/", (req, res) => res.send("🏥 Clinic API is running!"));
 
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.use("/api/patients", patientRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/appointments", appointmentRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
