@@ -1,4 +1,4 @@
-const Patient = require('../models/Patient'); // Make sure this matches your model file name
+const Patient = require('../models/patientModel'); // Make sure this matches your model file name
 
 // ✅ GET ALL PATIENTS (returns array)
 exports.getAllPatients = async (req, res) => {
