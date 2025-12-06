@@ -15,7 +15,7 @@ exports.createPatient = async (req, res) => {
 };
 
 // Get single patient
-exports.getPatient = async (req, res) => {
+exports.getAllPatients = async (req, res) => {
   try {
     const p = await Patient.findById(req.params.id);
     if (!p) return res.status(404).json({ message: 'Patient not found' });
