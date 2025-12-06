@@ -1,83 +1,80 @@
-const Patient = require('../models/patientModel');
+const Patient = require('../models/Patient'); // Make sure this matches your model file name
 
-// Create patient
+// ✅ GET ALL PATIENTS (returns array)
+exports.getAllPatients = async (req, res) => {
+  try {
+    const patients = await Patient.find().sort({ createdAt: -1 });
+    res.json(patients); // Returns array of patients
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✅ GET SINGLE PATIENT
+exports.getPatient = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) return res.status(404).json({ message: 'Patient not found' });
+    res.json(patient);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✅ CREATE PATIENT (only one version!)
 exports.createPatient = async (req, res) => {
   try {
     const { name, birthDate, email, phone } = req.body;
+    
+    // Validation
     if (!name || !birthDate || !email || !phone) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    const patient = await Patient.create({ name, birthDate, email, phone });
-    res.status(201).json(patient);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Get single patient
-exports.getAllPatients = async (req, res) => {
-  try {
-    const p = await Patient.findById(req.params.id);
-    if (!p) return res.status(404).json({ message: 'Patient not found' });
-    res.json(p);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// List all patients (with pagination and search)
-exports.listPatients = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 10, 100);
-    const skip = (page - 1) * limit;
-    const q = {};
-    if (req.query.name) q.name = new RegExp(req.query.name, 'i');
-
-    const [items, count] = await Promise.all([
-      Patient.find(q).skip(skip).limit(limit).sort({ createdAt: -1 }),
-      Patient.countDocuments(q)
-    ]);
-
-    res.json({ page, limit, total: count, items });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Update patient
-exports.updatePatient = async (req, res) => {
-  try {
-    const data = (({ name, birthDate, email, phone }) => ({ name, birthDate, email, phone }))(req.body);
-    const p = await Patient.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
-    if (!p) return res.status(404).json({ message: 'Patient not found' });
-    res.json(p);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Delete patient
-exports.deletePatient = async (req, res) => {
-  try {
-    const p = await Patient.findByIdAndDelete(req.params.id);
-    if (!p) return res.status(404).json({ message: 'Patient not found' });
-    res.status(204).send();
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-const createPatient = async (req, res) => {
-  try {
-    const patient = new Patient(req.body);
+    
+    const patient = new Patient({ name, birthDate, email, phone });
     const savedPatient = await patient.save();
+    
     res.status(201).json(savedPatient);
-  } catch (error) {
-    if (error.code === 11000) {
+  } catch (err) {
+    if (err.code === 11000) {
+      // Duplicate email (if email is unique in schema)
       res.status(400).json({ message: 'Email already exists. Please use another email.' });
     } else {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: err.message });
     }
+  }
+};
+
+// ✅ UPDATE PATIENT
+exports.updatePatient = async (req, res) => {
+  try {
+    const { name, birthDate, email, phone } = req.body;
+    const data = { name, birthDate, email, phone };
+    
+    const patient = await Patient.findByIdAndUpdate(
+      req.params.id, 
+      data, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!patient) return res.status(404).json({ message: 'Patient not found' });
+    res.json(patient);
+  } catch (err) {
+    if (err.code === 11000) {
+      res.status(400).json({ message: 'Email already exists' });
+    } else {
+      res.status(500).json({ message: err.message });
+    }
+  }
+};
+
+// ✅ DELETE PATIENT
+exports.deletePatient = async (req, res) => {
+  try {
+    const patient = await Patient.findByIdAndDelete(req.params.id);
+    if (!patient) return res.status(404).json({ message: 'Patient not found' });
+    res.status(204).send(); // No content
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
