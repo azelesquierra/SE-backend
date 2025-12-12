@@ -2,6 +2,23 @@ const Appointment = require('../models/appointmentModel');
 const Patient = require('../models/patientModel');
 const Doctor = require('../models/doctorModel');
 
+// ✅ GET ALL APPOINTMENTS (for React frontend - returns array)
+exports.getAllAppointments = async (req, res) => {
+  try {
+    console.log("📋 Getting all appointments for React...");
+    const appointments = await Appointment.find()
+      .populate('patientId', 'name email phone')
+      .populate('doctorId', 'name specialty')
+      .sort({ startAt: -1 });
+    
+    console.log(`✅ Found ${appointments.length} appointments`);
+    res.json(appointments); // Return array directly for React
+  } catch (err) {
+    console.error("❌ Error getting appointments:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Create appointment
 exports.createAppointment = async (req, res) => {
   try {
@@ -27,7 +44,13 @@ exports.createAppointment = async (req, res) => {
     }
 
     const appt = await Appointment.create({ patientId, doctorId, startAt, endAt, notes });
-    res.status(201).json(appt);
+    
+    // Return populated appointment
+    const populatedAppt = await Appointment.findById(appt._id)
+      .populate('patientId', 'name email phone')
+      .populate('doctorId', 'name specialty');
+    
+    res.status(201).json(populatedAppt);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -36,7 +59,9 @@ exports.createAppointment = async (req, res) => {
 // Get single appointment (with patient and doctor info)
 exports.getAppointment = async (req, res) => {
   try {
-    const a = await Appointment.findById(req.params.id).populate('patientId doctorId');
+    const a = await Appointment.findById(req.params.id)
+      .populate('patientId', 'name email phone')
+      .populate('doctorId', 'name specialty');
     if (!a) return res.status(404).json({ message: 'Appointment not found' });
     res.json(a);
   } catch (err) {
@@ -44,7 +69,7 @@ exports.getAppointment = async (req, res) => {
   }
 };
 
-// List appointments (with filtering + pagination)
+// List appointments (with filtering + pagination - for API calls)
 exports.listAppointments = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -55,7 +80,10 @@ exports.listAppointments = async (req, res) => {
     if (req.query.patient) filter.patientId = req.query.patient;
 
     const [items, total] = await Promise.all([
-      Appointment.find(filter).populate('patientId doctorId').skip(skip).limit(limit).sort({ startAt: -1 }),
+      Appointment.find(filter)
+        .populate('patientId', 'name email phone')
+        .populate('doctorId', 'name specialty')
+        .skip(skip).limit(limit).sort({ startAt: -1 }),
       Appointment.countDocuments(filter)
     ]);
 
@@ -68,10 +96,23 @@ exports.listAppointments = async (req, res) => {
 // Update appointment
 exports.updateAppointment = async (req, res) => {
   try {
-    const data = (({ startAt, endAt, notes, patientId, doctorId }) => ({ startAt, endAt, notes, patientId, doctorId }))(req.body);
-    const a = await Appointment.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
+    const data = (({ startAt, endAt, notes, patientId, doctorId }) => 
+      ({ startAt, endAt, notes, patientId, doctorId }))(req.body);
+    
+    const a = await Appointment.findByIdAndUpdate(
+      req.params.id, 
+      data, 
+      { new: true, runValidators: true }
+    );
+    
     if (!a) return res.status(404).json({ message: 'Appointment not found' });
-    res.json(a);
+    
+    // Return populated appointment
+    const populatedAppt = await Appointment.findById(a._id)
+      .populate('patientId', 'name email phone')
+      .populate('doctorId', 'name specialty');
+    
+    res.json(populatedAppt);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
